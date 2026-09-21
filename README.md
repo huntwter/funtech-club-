@@ -154,6 +154,6 @@ npm run preview
 
 ### Made by **Jatin Sharma** for fun With heart
 
-© 2024–2025 Fun Tech Club · MITS Gwalior
+© 2026 Fun Tech Club · MITS Gwalior
 
 </div>
