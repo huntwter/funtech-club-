@@ -5,6 +5,7 @@ import {
   BookOpen,
   CalendarDays,
   Check,
+  CheckCircle2,
   ChevronDown,
   Clock3,
   Code2,
@@ -62,6 +63,7 @@ const events = [
     copy: 'A low-stakes evening of strange mechanics, tiny sprites, and playable ideas. Bring a laptop or just an idea.',
     tone: 'coral',
     image: '/images/funtech/Techmania2.jpg',
+    status: 'completed',
   },
   {
     date: '14',
@@ -72,6 +74,7 @@ const events = [
     copy: 'Honest notes on projects, portfolios, and the first technical interview — led by seniors who have been there.',
     tone: 'ink',
     image: '/images/funtech/placement.jpg',
+    status: 'completed',
   },
   {
     date: '21',
@@ -82,6 +85,7 @@ const events = [
     copy: 'Make LEDs dance, sensors misbehave, and physical computing feel less like a textbook.',
     tone: 'mint',
     image: '/images/funtech/TechBuzz2.jpg',
+    status: 'upcoming',
   },
 ];
 
@@ -142,6 +146,54 @@ function App() {
       current.includes(index) ? current.filter((item) => item !== index) : [...current, index],
     );
   };
+
+  const renderEventCard = ({ event, index }: { event: (typeof events)[number]; index: number }) => (
+    <article className={`event-card event-${event.tone} ${event.status === 'completed' ? 'event-completed' : ''} reveal`} key={event.title} data-testid={`card-event-${index}`}>
+      <div className="event-image-wrap">
+        <img src={event.image} alt="" loading="lazy" />
+      </div>
+      <div className="event-card-body">
+        <div className="event-card-top">
+          <div className="event-date" aria-label={`${event.date} ${event.month}`}>
+            <strong>{event.date}</strong>
+            <span>{event.month}</span>
+          </div>
+          <span className="event-tag">{event.tag}</span>
+          <span className={`event-status ${event.status === 'upcoming' ? 'event-status-upcoming' : 'event-status-completed'}`}>
+            {event.status === 'upcoming' ? 'UPCOMING' : 'COMPLETED'}
+          </span>
+          {event.status === 'upcoming' ? (
+            <button
+              className={`event-action ${savedEvents.includes(index) ? 'event-saved' : ''}`}
+              type="button"
+              aria-label={savedEvents.includes(index) ? `Remove ${event.title} from saved events` : `Save ${event.title}`}
+              aria-pressed={savedEvents.includes(index)}
+              onClick={() => toggleSavedEvent(index)}
+              data-testid={`button-save-event-${index}`}
+            >
+              <CalendarDays size={18} />
+            </button>
+          ) : (
+            <span className="event-complete-icon" aria-label="Event completed">
+              <CheckCircle2 size={19} />
+            </span>
+          )}
+        </div>
+        <div className="event-info">
+          <h3>{event.title}</h3>
+          <p>{event.copy}</p>
+        </div>
+        <div className="event-meta">
+          <span><MapPin size={14} /> {event.meta.split(' · ')[0]}</span>
+          <span><Clock3 size={14} /> {event.meta.split(' · ')[1]}</span>
+        </div>
+      </div>
+    </article>
+  );
+
+  const eventEntries = events.map((event, index) => ({ event, index }));
+  const upcomingEvents = eventEntries.filter(({ event }) => event.status === 'upcoming');
+  const completedEvents = eventEntries.filter(({ event }) => event.status === 'completed');
 
   return (
     <div className="site-shell">
@@ -310,37 +362,23 @@ function App() {
               make them.
             </p>
           </div>
-          <div className="events-list">
-            {events.map((event, index) => (
-              <article className={`event-row event-${event.tone} reveal`} key={event.title} data-testid={`card-event-${index}`}>
-                <div className="event-date" aria-label={`${event.date} ${event.month}`}>
-                  <strong>{event.date}</strong>
-                  <span>{event.month}</span>
-                </div>
-                <div className="event-info">
-                  <span className="event-tag">{event.tag}</span>
-                  <h3>{event.title}</h3>
-                  <p>{event.copy}</p>
-                </div>
-                <div className="event-meta">
-                  <span><MapPin size={14} /> {event.meta.split(' · ')[0]}</span>
-                  <span><Clock3 size={14} /> {event.meta.split(' · ')[1]}</span>
-                </div>
-                <div className="event-image-wrap">
-                  <img src={event.image} alt="" loading="lazy" />
-                </div>
-                <button
-                  className={`event-action ${savedEvents.includes(index) ? 'event-saved' : ''}`}
-                  type="button"
-                  aria-label={savedEvents.includes(index) ? `Remove ${event.title} from saved events` : `Save ${event.title}`}
-                  aria-pressed={savedEvents.includes(index)}
-                  onClick={() => toggleSavedEvent(index)}
-                  data-testid={`button-save-event-${index}`}
-                >
-                  <CalendarDays size={18} />
-                </button>
-              </article>
-            ))}
+          <div className="event-group event-group-upcoming">
+            <div className="event-group-heading">
+              <h3>Next up</h3>
+              <span>Save your spot</span>
+            </div>
+            <div className="events-list">
+              {upcomingEvents.map(renderEventCard)}
+            </div>
+          </div>
+          <div className="event-group event-group-completed">
+            <div className="event-group-heading">
+              <h3>Past events</h3>
+              <span>Field notes from the club</span>
+            </div>
+            <div className="events-list">
+              {completedEvents.map(renderEventCard)}
+            </div>
           </div>
           <a className="calendar-link reveal" href="#join" data-testid="link-calendar-rsvp">
             Get event notes in your inbox <ArrowUpRight size={17} />
@@ -395,28 +433,21 @@ function App() {
             </a>
           </div>
           <div className="people-cards reveal">
-            <article className="person-card person-student">
-              <div className="portrait portrait-student">
-                <img src="/images/funtech/Club carnival 2.jpg" alt="Fun Tech students during a campus activity" loading="lazy" />
-                <span>+</span>
-              </div>
+            <article className="person-card person-tej">
+              <img className="person-image" src="/images/funtech/cordinator-image1.jpg" alt="Dr. Tej Singh" loading="lazy" />
               <div className="person-info">
-                <span>THE STUDENT CREW</span>
-                <h3>Many brains.<br />One open tab.</h3>
+                <span>FACULTY COORDINATOR</span>
+                <h3>Dr. Tej Singh</h3>
+                <p className="person-role">Assistant Professor</p>
               </div>
             </article>
-            <article className="person-card person-coordinators">
-              <div className="coordinator-mark">FT</div>
-              <div className="coordinator-portraits" aria-label="Fun Tech faculty coordinators">
-                <img src="/images/funtech/cordinator-image1.jpg" alt="Dr. Tej Singh" loading="lazy" />
-                <img src="/images/funtech/cordinator-image2.jpg" alt="Dr. Priyanka Garg" loading="lazy" />
-              </div>
+            <article className="person-card person-priyanka">
+              <img className="person-image" src="/images/funtech/cordinator-image2.jpg" alt="Dr. Priyanka Garg" loading="lazy" />
               <div className="person-info">
-                <span>FACULTY COORDINATORS</span>
-                <h3>Dr. Tej Singh<br />Dr. Priyanka Garg</h3>
+                <span>FACULTY COORDINATOR</span>
+                <h3>Dr. Priyanka Garg</h3>
+                <p className="person-role">Assistant Professor</p>
               </div>
-              <div className="coord-rule" />
-              <p>Guidance without the gatekeeping.</p>
             </article>
           </div>
         </section>
