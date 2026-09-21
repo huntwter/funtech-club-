@@ -1233,7 +1233,7 @@ function App() {
             Made by <strong>Jatin Sharma</strong> for fun With heart{' '}
             <span className="heart-icon">❤️</span>
           </p>
-          <span className="footer-year">© 2024–25 / FT-MITS</span>
+          <span className="footer-year">© 2026 Made by Jatin Sharma</span>
         </div>
       </footer>
 
